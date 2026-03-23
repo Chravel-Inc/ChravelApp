@@ -1839,9 +1839,17 @@ export const AIConciergeChat = ({
   return (
     <div className="flex flex-col overflow-hidden flex-1 min-h-0 h-full">
       <div className="rounded-2xl border border-white/10 bg-black/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden flex flex-col flex-1">
-        {/* Header — search/mic aligned with input bar send button (gradient theme) */}
+        {/* Header — title row + controls row */}
         <div className="border-b border-white/10 bg-black/30 px-3 py-2 flex-shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
+          {/* Row 1: Title */}
+          <h3
+            className="text-lg font-semibold text-white text-center truncate leading-tight"
+            data-testid="ai-concierge-header"
+          >
+            Concierge AI | Chravel Agent
+          </h3>
+          {/* Row 2: Search | Live | Upload — evenly spaced */}
+          <div className="flex items-center justify-between mt-2">
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
@@ -1850,14 +1858,6 @@ export const AIConciergeChat = ({
             >
               <Search size={CTA_ICON_SIZE} className="text-white" />
             </button>
-            <div className="flex-1 min-w-0 text-center">
-              <h3
-                className="text-lg font-semibold text-white text-center truncate leading-tight"
-                data-testid="ai-concierge-header"
-              >
-                Concierge AI | Chravel Agent
-              </h3>
-            </div>
             {DUPLEX_VOICE_ENABLED && (
               <button
                 type="button"
