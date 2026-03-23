@@ -184,6 +184,12 @@
 - **Applies when:** Any chat surface supports URL previews.
 - **Evidence:** Main chat web send path was blocked by `isFetchingPreview` in `ChatInput`, causing Enter/button sends to appear nonfunctional for link messages.
 - **Provenance:** March 2026 chat send + unfurl forensic fix.
+### URL-deduped preview caches must still hydrate every message ID
+- **Tip:** If link preview fetching is deduped by URL, keep a separate URL→preview cache and hydrate each message ID from that cache. A URL-level "already fetched" set alone can leave later messages with the same URL permanently missing previews.
+- **Applies when:** Any message list/broadcast/channel UI that enriches previews client-side and dedupes OG fetches across rows.
+- **Avoid when:** Preview data is always persisted per-message server-side and clients never need fallback enrichment.
+- **Evidence:** `useLinkPreviews` skipped duplicate URLs after first fetch but only stored preview on the first message id; subsequent messages with the same URL rendered no card until a full data reload.
+- **Provenance:** March 2026 link-preview robustness follow-up (`src/features/chat/hooks/useLinkPreviews.ts`).
 ### Remove visual effects at the trigger class, not with clipping overrides
 - **Tip:** When a conditional animation class is the sole activation path for a decorative effect, remove the class usage in the component and delete the paired keyframes/utilities instead of masking with `overflow-hidden`/z-index patches.
 - **Applies when:** UI regressions from over-scoped pseudo-element effects tied to active/listening states.
