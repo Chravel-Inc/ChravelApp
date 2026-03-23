@@ -116,4 +116,17 @@ describe('ChatInput send behavior', () => {
       expect(onSendMessage).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('keeps compact chat controls at 36px minimum on mobile', () => {
+    render(<ChatInput {...baseProps} inputMessage="hello team" onSendMessage={vi.fn()} />);
+
+    const emojiButton = screen.getByRole('button', { name: 'Insert emoji' });
+    const sendButton = screen.getByRole('button', { name: 'Send message' });
+
+    expect(emojiButton.className).toContain('size-9');
+    expect(emojiButton.className).toContain('min-w-[36px]');
+    expect(sendButton.className).toContain('size-9');
+    expect(sendButton.className).toContain('min-w-[36px]');
+    expect(sendButton.className).not.toContain('size-8');
+  });
 });

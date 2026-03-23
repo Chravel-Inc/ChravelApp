@@ -30,8 +30,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils';
 import { CTA_GRADIENT, CTA_INTERACTIVE, CTA_DISABLED, CTA_ICON_SIZE } from '@/lib/ctaButtonStyles';
 
-/** Chat-specific button — 32px on mobile for more text input room, 40px on sm+ */
-const CTA_BUTTON_CHAT = `size-8 min-w-[32px] sm:size-10 sm:min-w-[40px] rounded-full flex items-center justify-center shrink-0 select-none touch-manipulation ${CTA_GRADIENT} ${CTA_INTERACTIVE} ${CTA_DISABLED}`;
+/** Chat-specific button — 36px on mobile for touch reliability, 40px on sm+ */
+const CTA_BUTTON_CHAT = `size-9 min-w-[36px] sm:size-10 sm:min-w-[40px] rounded-full flex items-center justify-center shrink-0 select-none touch-manipulation ${CTA_GRADIENT} ${CTA_INTERACTIVE} ${CTA_DISABLED}`;
 import * as haptics from '@/native/haptics';
 import { MentionPicker, TripMember } from './MentionPicker';
 import { VoiceButton } from './VoiceButton';
@@ -568,10 +568,11 @@ export const ChatInput = ({
           <button
             onClick={handleSend}
             disabled={(!inputMessage.trim() && !isShareUploading) || isTyping || isSendingMessage}
+            aria-label={isBroadcastMode ? 'Send broadcast' : 'Send message'}
             className={
               isBroadcastMode
                 ? cn(
-                    'size-8 min-w-[32px] sm:size-10 sm:min-w-[40px] rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-[#B91C1C] to-[#991B1B] hover:opacity-90 shrink-0 select-none touch-manipulation',
+                    'size-9 min-w-[36px] sm:size-10 sm:min-w-[40px] rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-[#B91C1C] to-[#991B1B] hover:opacity-90 shrink-0 select-none touch-manipulation',
                   )
                 : CTA_BUTTON_CHAT
             }
