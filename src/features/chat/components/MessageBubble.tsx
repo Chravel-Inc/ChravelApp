@@ -431,9 +431,18 @@ export const MessageBubble = memo(
       },
       [longPressHandlers, handleTouchEnd],
     );
+    const handleHoverStart = useCallback(() => {
+      if (hideReactionsTimerRef.current) clearTimeout(hideReactionsTimerRef.current);
+      setShowReactions(true);
+    }, []);
+    const handleHoverEnd = useCallback(() => {
+      if (hideReactionsTimerRef.current) clearTimeout(hideReactionsTimerRef.current);
+      hideReactionsTimerRef.current = setTimeout(() => setShowReactions(false), 300);
+    }, []);
     const mergedMouseLeave = useCallback(() => {
       longPressHandlers.onMouseLeave();
-    }, [longPressHandlers]);
+      handleHoverEnd();
+    }, [longPressHandlers, handleHoverEnd]);
 
     useEffect(() => {
       return () => {
@@ -458,6 +467,7 @@ export const MessageBubble = memo(
           onMouseDown={longPressHandlers.onMouseDown}
           onMouseMove={longPressHandlers.onMouseMove}
           onMouseUp={longPressHandlers.onMouseUp}
+          onMouseEnter={handleHoverStart}
           onMouseLeave={mergedMouseLeave}
           onTouchStart={mergedTouchStart}
           onTouchMove={mergedTouchMove}
