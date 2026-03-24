@@ -53,6 +53,40 @@ function normalizePermission(permission: string): PermissionResult {
   return 'prompt';
 }
 
+interface ExpoPermissionBridgeDetail {
+  receive?: string | null;
+  error?: string | null;
+}
+
+function requestExpoPermissionViaBridge(action: 'check' | 'request'): Promise<PermissionResult> {
+  return new Promise(resolve => {
+    const EVENT_NAME = 'chravel:push-permission';
+    const TIMEOUT_MS = 15_000;
+
+    const unsub = onNativeEvent<ExpoPermissionBridgeDetail>(EVENT_NAME, detail => {
+      clearTimeout(timeoutId);
+      unsub();
+
+      if (typeof detail?.receive === 'string') {
+        resolve(normalizePermission(detail.receive));
+        return;
+      }
+
+      // Fail closed when bridge payload is malformed or missing.
+      resolve('denied');
+    });
+
+    const timeoutId = setTimeout(() => {
+      unsub();
+      resolve('denied');
+    }, TIMEOUT_MS);
+
+    postToNative({
+      type: action === 'request' ? 'push:permission:request' : 'push:permission:check',
+    });
+  });
+}
+
 /**
  * Request push notification permissions
  * Call AFTER user consent (e.g., after login, on settings screen)
@@ -60,6 +94,10 @@ function normalizePermission(permission: string): PermissionResult {
 export async function requestPermissions(): Promise<PermissionResult> {
   if (!isNativePush()) {
     return 'denied';
+  }
+
+  if (getNativeRuntime() === 'expo-webview') {
+    return requestExpoPermissionViaBridge('request');
   }
 
   try {
@@ -79,6 +117,10 @@ export async function requestPermissions(): Promise<PermissionResult> {
 export async function checkPermissions(): Promise<PermissionResult> {
   if (!isNativePush()) {
     return 'denied';
+  }
+
+  if (getNativeRuntime() === 'expo-webview') {
+    return requestExpoPermissionViaBridge('check');
   }
 
   try {
