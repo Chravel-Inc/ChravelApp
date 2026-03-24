@@ -78,6 +78,19 @@ Known security anti-patterns discovered during audits. Reference this before int
 
 ---
 
+## 5. Admin Maintenance Function Exposed With `verify_jwt = false`
+
+**Symptom:** A maintenance/backfill endpoint is labeled "admin-only" in comments, but any external caller can trigger destructive or expensive work.
+**Risk:** HIGH — public callers can invoke service-role-backed deletes, reseeds, reindexing, or third-party API spend.
+**Root Cause:** `supabase/config.toml` sets `verify_jwt = false`, and the handler creates a service-role client without enforcing an explicit admin bearer or cron secret check first.
+**How to Confirm:** Inspect the function for `verify_jwt = false` plus no `Authorization`/`verifyCronAuth` guard before service-role mutations. `batch-generate-embeddings` was a confirmed example.
+**Smallest Safe Fix:** Add a fail-closed guard that requires the service-role bearer token (or `verifyCronAuth` for scheduled jobs) before parsing input or creating the privileged client.
+**Required Tests:** Unit test that missing and invalid bearer headers are denied.
+**Regression Surfaces:** Seed/reseed scripts, embeddings/backfills, cleanup jobs, one-off migration helpers, internal data repair endpoints.
+**Fixed in:** `supabase/functions/batch-generate-embeddings/index.ts`, `supabase/functions/_shared/requireServiceRole.ts` (March 2026 audit)
+
+---
+
 ## General Anti-Patterns to Avoid
 
 - **Never use `|| 'default'` for security-sensitive env vars** — fail loudly instead
