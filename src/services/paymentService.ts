@@ -354,17 +354,18 @@ export const paymentService = {
   // Helper: Update parent payment's is_settled based on all splits
   async updateParentPaymentSettledStatus(paymentMessageId: string): Promise<void> {
     try {
-      // Get all splits for this payment
-      const { data: allSplits, error: splitsError } = await supabase
+      // Use an unsettled COUNT query (head-only) so large events are handled correctly.
+      // A hard row limit here can misclassify partially settled payments as fully settled.
+      const { count: unsettledCount, error: splitsError } = await supabase
         .from('payment_splits')
-        .select('is_settled')
+        .select('id', { count: 'exact', head: true })
         .eq('payment_message_id', paymentMessageId)
-        .limit(500);
+        .eq('is_settled', false);
 
-      if (splitsError || !allSplits) return;
+      if (splitsError || unsettledCount === null) return;
 
-      // Check if ALL splits are settled
-      const allSettled = allSplits.length > 0 && allSplits.every(s => s.is_settled);
+      // Parent payment is settled only when no unsettled splits remain.
+      const allSettled = unsettledCount === 0;
 
       // Update parent payment's is_settled flag
       await supabase
