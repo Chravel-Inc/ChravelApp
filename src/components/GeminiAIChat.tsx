@@ -169,7 +169,7 @@ export const GeminiAIChat = ({ tripId, basecamp, preferences }: GeminiAIChatProp
         </div>
       </div>
 
-      {basecamp && (
+      {!isVoiceActive && basecamp && (
         <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3 mb-4">
           <p className="text-green-300 text-sm">
             📍 Basecamp: {basecamp.name} • {basecamp.address}
@@ -177,7 +177,7 @@ export const GeminiAIChat = ({ tripId, basecamp, preferences }: GeminiAIChatProp
         </div>
       )}
 
-      {aiStatus === 'fallback' && (
+      {!isVoiceActive && aiStatus === 'fallback' && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 mb-4">
           <p className="text-yellow-300 text-sm flex items-center gap-2">
             <WifiOff size={14} />
@@ -185,10 +185,6 @@ export const GeminiAIChat = ({ tripId, basecamp, preferences }: GeminiAIChatProp
           </p>
         </div>
       )}
-
-      <div className="space-y-4 mb-6 max-h-80 overflow-y-auto">
-        <ChatMessages messages={messages} isTyping={isTyping} />
-      </div>
 
       {isVoiceActive ? (
         <VoiceLiveInline
@@ -201,14 +197,20 @@ export const GeminiAIChat = ({ tripId, basecamp, preferences }: GeminiAIChatProp
           onStop={voice.stopSession}
         />
       ) : (
-        <ChatInput
-          inputMessage={inputMessage}
-          onInputChange={setInputMessage}
-          onSendMessage={handleSendMessage}
-          onKeyPress={handleKeyPress}
-          apiKey=""
-          isTyping={isTyping}
-        />
+        <>
+          <div className="space-y-4 mb-6 max-h-80 overflow-y-auto">
+            <ChatMessages messages={messages} isTyping={isTyping} />
+          </div>
+
+          <ChatInput
+            inputMessage={inputMessage}
+            onInputChange={setInputMessage}
+            onSendMessage={handleSendMessage}
+            onKeyPress={handleKeyPress}
+            apiKey=""
+            isTyping={isTyping}
+          />
+        </>
       )}
     </div>
   );
