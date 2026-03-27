@@ -21,7 +21,7 @@ export interface GroundingCard {
 export interface ChatActionCard {
   type: 'poll' | 'task' | 'calendar';
   label: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean>;
 }
 
 export interface GeminiAPIConfig {
