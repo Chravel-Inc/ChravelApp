@@ -11,24 +11,29 @@ import { TripGrid } from '../components/home/TripGrid';
 import { EmptyState } from '../components/home/EmptyState';
 import { useAuth } from '../hooks/useAuth';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useJoinRequests } from '../contexts/JoinRequestContext';
 import { proTripMockData } from '../data/proTripMockData';
 import { eventsMockData } from '../data/eventsMockData';
+import { TripFilter } from '../types/joinRequests';
 
 const Index = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [viewMode, setViewMode] = useState('myTrips');
+  const [activeFilter, setActiveFilter] = useState<TripFilter>('total');
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { joinRequests, pendingCount } = useJoinRequests();
 
-  // Sample trip data with updated examples
+  // Sample trip data with status for filtering
   const trips = [
     {
       id: 1,
       title: "Spring Break Cancun 2026 Kappa Alpha Psi Trip",
       location: "Cancun, Mexico",
       dateRange: "Mar 15 - Mar 22, 2026",
+      status: 'upcoming' as const,
       participants: [
         { id: 1, name: "Marcus", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" },
         { id: 2, name: "Jamal", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" },
@@ -42,6 +47,7 @@ const Index = () => {
       title: "Tokyo Adventure",
       location: "Tokyo, Japan",
       dateRange: "Oct 5 - Oct 15, 2025",
+      status: 'completed' as const,
       participants: [
         { id: 4, name: "Alex", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" },
         { id: 5, name: "Maria", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&crop=face" },
@@ -53,6 +59,7 @@ const Index = () => {
       title: "Bali Getaway",
       location: "Bali, Indonesia",
       dateRange: "Dec 10 - Dec 20, 2025",
+      status: 'completed' as const,
       participants: [
         { id: 7, name: "Lisa", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop&crop=face" },
         { id: 8, name: "Ryan", avatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=40&h=40&fit=crop&crop=face" },
@@ -64,6 +71,7 @@ const Index = () => {
       title: "Kristen's Bachelorette Party",
       location: "Nashville, TN",
       dateRange: "Nov 8 - Nov 10, 2025",
+      status: 'completed' as const,
       participants: [
         { id: 10, name: "Kristen", avatar: "https://images.unsplash.com/photo-1506634572416-48cdfe530110?w=40&h=40&fit=crop&crop=face" },
         { id: 11, name: "Ashley", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&crop=face" },
@@ -78,6 +86,7 @@ const Index = () => {
       title: "Coachella Squad 2026",
       location: "Indio, CA",
       dateRange: "Apr 10 - Apr 13, 2026",
+      status: 'upcoming' as const,
       participants: [
         { id: 16, name: "Tyler", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" },
         { id: 17, name: "Zoe", avatar: "https://images.unsplash.com/photo-1506634572416-48cdfe530110?w=40&h=40&fit=crop&crop=face" },
@@ -91,6 +100,7 @@ const Index = () => {
       title: "Johnson Family Summer Vacay",
       location: "Aspen, CO",
       dateRange: "Jul 20 - Jul 28, 2025",
+      status: 'active' as const,
       participants: [
         { id: 21, name: "Dad (Mike)", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" },
         { id: 22, name: "Mom (Linda)", avatar: "https://images.unsplash.com/photo-1506634572416-48cdfe530110?w=40&h=40&fit=crop&crop=face" },
@@ -104,6 +114,7 @@ const Index = () => {
       title: "Fantasy Football Chat's Annual Golf Outing",
       location: "Phoenix, Arizona",
       dateRange: "Feb 20 - Feb 23, 2025",
+      status: 'active' as const,
       participants: [
         { id: 26, name: "Commissioner Mike", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" },
         { id: 27, name: "Big Rob", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" },
@@ -118,6 +129,7 @@ const Index = () => {
       title: "Harris Middle School's 8th Grade Field Trip to Washington DC",
       location: "Washington, DC",
       dateRange: "Apr 15 - Apr 18, 2025",
+      status: 'active' as const,
       participants: [
         { id: 32, name: "Ms. Johnson", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=40&h=40&fit=crop&crop=face" },
         { id: 33, name: "Mr. Davis", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" },
@@ -128,14 +140,27 @@ const Index = () => {
     }
   ];
 
+  const upcomingCount = trips.filter(t => t.status === 'upcoming').length;
+  const completedCount = trips.filter(t => t.status === 'completed').length;
+  const activeCount = trips.filter(t => t.status === 'active').length;
+
   console.log('Index - proTripMockData IDs:', Object.keys(proTripMockData));
   console.log('Index - eventsMockData IDs:', Object.keys(eventsMockData));
 
-  const hasTrips = viewMode === 'myTrips' 
-    ? trips.length > 0 
-    : viewMode === 'tripsPro' 
-    ? Object.keys(proTripMockData).length > 0
-    : Object.keys(eventsMockData).length > 0;
+  // Filter trips based on activeFilter
+  const filteredTrips = activeFilter === 'total' || activeFilter === 'requests'
+    ? trips
+    : trips.filter(t => t.status === activeFilter);
+
+  const hasContent = () => {
+    if (viewMode !== 'myTrips') {
+      return viewMode === 'tripsPro'
+        ? Object.keys(proTripMockData).length > 0
+        : Object.keys(eventsMockData).length > 0;
+    }
+    if (activeFilter === 'requests') return pendingCount > 0;
+    return filteredTrips.length > 0;
+  };
 
   return (
     <div className="min-h-screen bg-black font-outfit">
@@ -172,24 +197,35 @@ const Index = () => {
           onViewModeChange={setViewMode}
         />
 
-        {/* Trip Stats Overview */}
-        {viewMode === 'myTrips' && !isMobile && (
-          <TripStatsOverview totalTrips={trips.length} />
+        {/* Trip Stats Overview / Filter Tabs */}
+        {viewMode === 'myTrips' && (
+          <TripStatsOverview
+            totalTrips={trips.length}
+            upcomingCount={upcomingCount}
+            completedCount={completedCount}
+            activeCount={activeCount}
+            requestsCount={pendingCount}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+          />
         )}
 
         {/* Main Content - Trip Cards */}
         <div className="mb-8">
-          {hasTrips ? (
+          {hasContent() ? (
             <TripGrid
               viewMode={viewMode}
-              trips={trips}
+              trips={filteredTrips}
               proTrips={proTripMockData}
               events={eventsMockData}
+              activeFilter={activeFilter}
+              joinRequests={joinRequests}
             />
           ) : (
             <EmptyState
               viewMode={viewMode}
               onCreateTrip={() => setIsCreateModalOpen(true)}
+              activeFilter={activeFilter}
             />
           )}
         </div>
@@ -201,19 +237,19 @@ const Index = () => {
       </div>
 
       {/* Modals */}
-      <CreateTripModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
+      <CreateTripModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       />
 
-      <UpgradeModal 
-        isOpen={isUpgradeModalOpen} 
-        onClose={() => setIsUpgradeModalOpen(false)} 
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
       />
 
-      <SettingsMenu 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
+      <SettingsMenu
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

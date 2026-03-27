@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Trash, User, Plus, MoreHorizontal } from 'lucide-react';
+import { Calendar, MapPin, Trash, User, Plus, MoreHorizontal, Clock } from 'lucide-react';
 
 interface Participant {
   id: number;
@@ -19,9 +19,10 @@ interface Trip {
 
 interface TripCardProps {
   trip: Trip;
+  isPending?: boolean;
 }
 
-export const TripCard = ({ trip }: TripCardProps) => {
+export const TripCard = ({ trip, isPending = false }: TripCardProps) => {
   const navigate = useNavigate();
 
   const handleViewTrip = () => {
@@ -33,10 +34,20 @@ export const TripCard = ({ trip }: TripCardProps) => {
   };
 
   return (
-    <div className="group bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 hover:border-yellow-500/30 rounded-3xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl shadow-black/20">
+    <div className={`group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden transition-all duration-300 shadow-black/20 ${
+      isPending
+        ? 'opacity-50 cursor-default'
+        : 'hover:bg-white/10 hover:border-yellow-500/30 hover:scale-[1.02] hover:shadow-2xl'
+    }`}>
       {/* Trip Image/Header */}
       <div className="relative h-48 bg-gradient-to-br from-yellow-600/20 via-yellow-500/10 to-transparent p-6">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=200&fit=crop')] bg-cover bg-center opacity-20"></div>
+        {isPending && (
+          <div className="absolute top-4 right-4 z-20 bg-yellow-500/15 border border-yellow-500/30 rounded-full px-3 py-1 flex items-center gap-1.5">
+            <Clock size={12} className="text-yellow-500" />
+            <span className="text-yellow-500 text-xs font-medium">Pending</span>
+          </div>
+        )}
         <div className="relative z-10 flex justify-between items-start h-full">
           <div className="flex-1">
             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-yellow-300 transition-colors">
@@ -115,24 +126,36 @@ export const TripCard = ({ trip }: TripCardProps) => {
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <button 
-            onClick={handleViewTrip}
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-yellow-500/25"
-          >
-            View Trip Details
-          </button>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <button 
-              onClick={handleEditItinerary}
-              className="bg-gray-800/50 hover:bg-gray-700/50 text-white py-3 rounded-xl transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600"
+          {isPending ? (
+            <button
+              disabled
+              className="w-full bg-gray-700/50 text-gray-400 font-semibold py-4 rounded-2xl cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Edit Itinerary
+              <Clock size={18} />
+              Request Pending
             </button>
-            <button className="bg-gray-800/50 hover:bg-gray-700/50 text-white py-3 rounded-xl transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600">
-              Share Trip
-            </button>
-          </div>
+          ) : (
+            <>
+              <button
+                onClick={handleViewTrip}
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-yellow-500/25"
+              >
+                View Trip Details
+              </button>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleEditItinerary}
+                  className="bg-gray-800/50 hover:bg-gray-700/50 text-white py-3 rounded-xl transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600"
+                >
+                  Edit Itinerary
+                </button>
+                <button className="bg-gray-800/50 hover:bg-gray-700/50 text-white py-3 rounded-xl transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600">
+                  Share Trip
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

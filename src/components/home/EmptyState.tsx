@@ -1,13 +1,31 @@
 
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Clock } from 'lucide-react';
+import { TripFilter } from '../../types/joinRequests';
 
 interface EmptyStateProps {
   viewMode: string;
   onCreateTrip: () => void;
+  activeFilter?: TripFilter;
 }
 
-export const EmptyState = ({ viewMode, onCreateTrip }: EmptyStateProps) => {
+export const EmptyState = ({ viewMode, onCreateTrip, activeFilter }: EmptyStateProps) => {
+  if (activeFilter === 'requests') {
+    return (
+      <div className="text-center py-16">
+        <div className="w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Clock size={40} className="text-yellow-500" />
+        </div>
+        <h3 className="text-2xl font-bold text-white mb-3">
+          No pending requests
+        </h3>
+        <p className="text-gray-400 mb-8 max-w-md mx-auto">
+          Trips you've requested to join will appear here until approved by the trip admin.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="text-center py-16">
       <div className="w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -17,7 +35,7 @@ export const EmptyState = ({ viewMode, onCreateTrip }: EmptyStateProps) => {
         {viewMode === 'myTrips' ? 'No trips yet' : 'No professional trips yet'}
       </h3>
       <p className="text-gray-400 mb-8 max-w-md mx-auto">
-        {viewMode === 'myTrips' 
+        {viewMode === 'myTrips'
           ? 'Start planning your next adventure! Create your first trip and invite friends to join.'
           : 'Manage professional trips, tours, and events with advanced collaboration tools.'
         }

@@ -8,12 +8,14 @@ import { MobileEventCard } from '../MobileEventCard';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { ProTripData } from '../../types/pro';
 import { EventData } from '../../types/events';
+import { TripFilter, JoinRequest } from '../../types/joinRequests';
 
 interface Trip {
   id: number;
   title: string;
   location: string;
   dateRange: string;
+  status?: string;
   participants: Array<{
     id: number;
     name: string;
@@ -26,10 +28,39 @@ interface TripGridProps {
   trips: Trip[];
   proTrips: Record<string, ProTripData>;
   events: Record<string, EventData>;
+  activeFilter?: TripFilter;
+  joinRequests?: JoinRequest[];
 }
 
-export const TripGrid = ({ viewMode, trips, proTrips, events }: TripGridProps) => {
+export const TripGrid = ({ viewMode, trips, proTrips, events, activeFilter, joinRequests }: TripGridProps) => {
   const isMobile = useIsMobile();
+
+  // When showing requests, render join request cards
+  if (viewMode === 'myTrips' && activeFilter === 'requests' && joinRequests) {
+    const pendingRequests = joinRequests.filter(r => r.status === 'pending');
+    return (
+      <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 xl:grid-cols-3'}`}>
+        {pendingRequests.map((request) => {
+          const requestTrip: Trip = {
+            id: request.tripId,
+            title: request.tripTitle,
+            location: request.tripLocation,
+            dateRange: request.tripDateRange,
+            participants: request.tripParticipants,
+          };
+          return (
+            <React.Fragment key={request.id}>
+              {isMobile ? (
+                <MobileTripCard trip={requestTrip} isPending />
+              ) : (
+                <TripCard trip={requestTrip} isPending />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 xl:grid-cols-3'}`}>

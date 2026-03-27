@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import { ConsumerSubscriptionProvider } from "./hooks/useConsumerSubscription";
+import { JoinRequestProvider } from "./contexts/JoinRequestContext";
 import Index from "./pages/Index";
 import TripDetail from "./pages/TripDetail";
 import ItineraryAssignmentPage from "./pages/ItineraryAssignmentPage";
@@ -13,6 +14,7 @@ import ProTripDetail from "./pages/ProTripDetail";
 import EventDetail from "./pages/EventDetail";
 import ReviewAnalysis from "./pages/ReviewAnalysis";
 import AudioOverviews from "./pages/AudioOverviews";
+import JoinPage from "./pages/JoinPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +23,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <ConsumerSubscriptionProvider>
+        <JoinRequestProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -33,6 +36,8 @@ const App = () => (
               <Route path="/tour/pro/:proTripId" element={<ProTripDetail />} />
               {/* Events routes - New routes for Events functionality */}
               <Route path="/event/:eventId" element={<EventDetail />} />
+              {/* Join trip route */}
+              <Route path="/j/:code" element={<JoinPage />} />
               {/* AI Feature routes */}
               <Route path="/ai/review-analysis" element={<ReviewAnalysis />} />
               <Route path="/ai/audio-overviews" element={<AudioOverviews />} />
@@ -41,6 +46,7 @@ const App = () => (
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
+        </JoinRequestProvider>
       </ConsumerSubscriptionProvider>
     </AuthProvider>
   </QueryClientProvider>
