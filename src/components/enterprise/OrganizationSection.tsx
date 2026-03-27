@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Building, Camera, Upload } from 'lucide-react';
+import { Building, Upload } from 'lucide-react';
 
 interface OrganizationSectionProps {
   organization: {
@@ -23,25 +23,24 @@ export const OrganizationSection = ({ organization }: OrganizationSectionProps) 
       </div>
     </div>
 
-    {/* Organization Logo */}
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-      <h4 className="text-lg font-semibold text-white mb-4">Organization Logo</h4>
-      <div className="flex items-center gap-6">
-        <div className="relative">
-          <div className="w-24 h-24 bg-gradient-to-r from-glass-orange to-glass-yellow rounded-xl flex items-center justify-center">
-            <Building size={32} className="text-white" />
-          </div>
-          <button className="absolute -bottom-2 -right-2 bg-glass-orange hover:bg-glass-orange/80 text-white p-2 rounded-full transition-colors">
-            <Camera size={16} />
-          </button>
-        </div>
-        <div>
-          <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2 rounded-lg transition-colors">
-            <Upload size={16} />
-            Upload Logo
-          </button>
-          <p className="text-sm text-gray-400 mt-2">PNG, SVG or JPG. Max size 2MB.</p>
-        </div>
+    {/* Organization Profile & Logo Cards */}
+    <div className="grid grid-cols-2 gap-4">
+      {/* Organization Profile */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col items-center justify-center">
+        <h4 className="text-lg font-semibold text-white mb-6">Organization Profile</h4>
+        <button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-lg font-medium transition-colors w-48 text-center">
+          Create Organization
+        </button>
+      </div>
+
+      {/* Organization Logo */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col items-center justify-center">
+        <h4 className="text-lg font-semibold text-white mb-6">Organization Logo</h4>
+        <button className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-lg font-medium transition-colors w-48">
+          <Upload size={16} />
+          Upload Logo
+        </button>
+        <p className="text-sm text-gray-400 mt-3 text-center">PNG, SVG or JPG. Max 2MB.</p>
       </div>
     </div>
 
