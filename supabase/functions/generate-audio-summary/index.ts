@@ -195,7 +195,7 @@ async function extractContentFromUrl(url: string): Promise<string> {
 }
 
 // Use the latest Gemini Flash model - update when newer models are available
-const GEMINI_MODEL = 'gemini-2.5-flash'
+const GEMINI_MODEL = 'gemini-3.1-flash'
 
 async function generateSummaryText(content: string, geminiKey: string): Promise<string> {
   const response = await fetch(

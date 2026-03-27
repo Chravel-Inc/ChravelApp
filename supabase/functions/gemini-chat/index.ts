@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // Use the latest Gemini Flash model - update this string when newer models are available
 // Check https://ai.google.dev/gemini-api/docs/models for the latest model IDs
-const GEMINI_MODEL = 'gemini-2.5-flash'
+const GEMINI_MODEL = 'gemini-3.1-flash'
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
